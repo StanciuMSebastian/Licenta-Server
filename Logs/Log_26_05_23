@@ -1,0 +1,121 @@
+Client connected; /127.0.0.1
+Client login: Client1 ; /127.0.0.1
+Client Client1 requested his addresses
+
+Client connected; /127.0.0.1
+Client login: Client1 ; /127.0.0.1
+Client Client1 requested his addresses
+
+Client Client1 disconnected
+Client connected; /127.0.0.1
+Client login: Client1 ; /127.0.0.1
+Client Client1 requested his addresses
+
+Client Client1 requested his addresses
+
+Client Client1 disconnected
+Client connected; /127.0.0.1
+Client login: Tester1 ; /127.0.0.1
+Client Tester1 requested his addresses
+
+User Tester1 requested all untested addresses
+User Tester1 requested all untested addresses
+Client Tester1 disconnected
+Client connected; /127.0.0.1
+Client login: Client1 ; /127.0.0.1
+Client Client1 requested his addresses
+
+Client Client1 disconnected
+Client connected; /127.0.0.1
+Client login: Client1 ; /127.0.0.1
+Client Client1 requested his addresses
+
+Client Client1 disconnected
+Client connected; /127.0.0.1
+Failed Client login: Client2 ; /127.0.0.1
+Failed Client login: Client1 ; /127.0.0.1
+Failed Client login: user2 ; /127.0.0.1
+Client login: user2 ; /127.0.0.1
+Client user2 requested his addresses
+
+Client user2 disconnected
+Client connected; /127.0.0.1
+Client login: Maximilian ; /127.0.0.1
+Client Maximilian requested his addresses
+
+User Maximilian requested all untested addresses
+User Maximilian requested all untested addresses
+Client Maximilian disconnected
+Client connected; /127.0.0.1
+Client login: SaltySplatoon ; /127.0.0.1
+Client SaltySplatoon requested his addresses
+
+Client connected; /127.0.0.1
+Client login: SaltySplatoon ; /127.0.0.1
+Client SaltySplatoon requested his addresses
+
+Client connected; /127.0.0.1
+Failed Client login: SaltySpaltoon ; /127.0.0.1
+Client login: SaltySplatoon ; /127.0.0.1
+Client SaltySplatoon requested his addresses
+
+Client connected; /127.0.0.1
+Client login: SaltySplatoon ; /127.0.0.1
+Client SaltySplatoon requested his addresses
+
+Client connected; /127.0.0.1
+Client login: SaltySplatoon ; /127.0.0.1
+Client SaltySplatoon requested his addresses
+
+Client SaltySplatoon added a new address
+Client SaltySplatoon added a new address
+Client SaltySplatoon disconnected
+Client connected; /127.0.0.1
+Client login: Tester1 ; /127.0.0.1
+Client Tester1 requested his addresses
+
+User Tester1 requested all untested addresses
+Client connected; /127.0.0.1
+Client login: Tester1 ; /127.0.0.1
+Client Tester1 requested his addresses
+
+User Tester1 requested all untested addresses
+Client Tester1 disconnected
+Client connected; /127.0.0.1
+Client connected; /127.0.0.1
+Client login: Client1 ; /127.0.0.1
+Client Client1 requested his addresses
+
+Client connected; /127.0.0.1
+Client login: Client1 ; /127.0.0.1
+Client Client1 requested his addresses
+
+Client connected; /127.0.0.1
+Client login: Client1 ; /127.0.0.1
+Client Client1 requested his addresses
+
+Client connected; /127.0.0.1
+Client login: Client1 ; /127.0.0.1
+Client Client1 requested his addresses
+
+Client Client1 disconnected
+Client connected; /127.0.0.1
+Client login: Client10 ; /127.0.0.1
+Client Client10 requested his addresses
+
+Client Client10 disconnected
+Client connected; /127.0.0.1
+Failed Client login: Client111 ; /127.0.0.1
+Failed Client login: Client1 ; /127.0.0.1
+Failed Client register: Client`1231231312313 ; /127.0.0.1
+Failed Client register: Client1 ; /127.0.0.1
+Failed Client login: Client1 ; /127.0.0.1
+Client login: Client1 ; /127.0.0.1
+Client Client1 requested his addresses
+
+Client Client1 disconnected
+Client connected; /127.0.0.1
+Client login: Client1 ; /127.0.0.1
+Client Client1 requested his addresses
+
+Client Client1 disconnected

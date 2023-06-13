@@ -1,0 +1,27 @@
+Client connected; /127.0.0.1
+Client connected; /127.0.0.1
+Client connected; /127.0.0.1
+Client register: Client10 ; /127.0.0.1
+Client Client10 added a new address
+Client Client10 added a new address
+Client Client10 requested his addresses
+
+Client connected; /127.0.0.1
+Client login: Client1 ; /127.0.0.1
+Client Client1 requested his addresses
+
+Client connected; /127.0.0.1
+Failed Client login: Client6 ; /127.0.0.1
+Failed Client login: Client2 ; /127.0.0.1
+Client login: Client10 ; /127.0.0.1
+Client Client10 requested his addresses
+
+Client Client10 added a new address
+Client Client10 requested his addresses
+
+Client Client10 disconnected
+Client connected; /127.0.0.1
+Client login: Tester1 ; /127.0.0.1
+Client Tester1 requested his addresses
+
+User Tester1 requested all untested addresses
