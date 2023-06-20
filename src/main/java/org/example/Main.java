@@ -125,6 +125,17 @@ public class Main {
         return null;
     }
 
+    public static int getDoneAddresses(User user){
+        int counter = 0;
+
+        for(Address a : addressVector){
+            if(a.getClient().equals(user) && (a.isAutomaticScanComplete() || a.isManualScanComplete()))
+                counter++;
+        }
+
+        return counter;
+    }
+
     public static void main(String[] args){
         try{
             // AddressScanner.passiveScan("nothing");

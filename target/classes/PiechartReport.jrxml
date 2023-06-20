@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PiechartReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="264c6634-4f6f-41a5-86ca-3c09e536c139">
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="riskWeight" class="java.lang.Integer"/>
+	<field name="riskName" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="339" splitType="Stretch">
+			<pieChart>
+				<chart evaluationTime="Report">
+					<reportElement x="0" y="0" width="555" height="335" uuid="cf549ac4-7da2-4c7e-a526-ca8403bf6a27">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<keyExpression><![CDATA[$F{riskName}]]></keyExpression>
+					<valueExpression><![CDATA[$F{riskWeight}]]></valueExpression>
+					<labelExpression><![CDATA[$F{riskName}]]></labelExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel/>
+				</piePlot>
+			</pieChart>
+		</band>
+	</detail>
+</jasperReport>

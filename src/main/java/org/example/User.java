@@ -27,6 +27,11 @@ public class User {
         return this.password.equals(password);
     }
 
+    @Override
+    public String toString(){
+        return "Username: " + this.username + "\nE-mail:" + this.email;
+    }
+
     public User(String username, String role, String email, String password, int id) {
         this.username = username;
         this.role = role;

@@ -62,7 +62,8 @@ public class AddressScanner {
 
             System.out.println("Passive Scan completed");
 
-            return new String(api.core.htmlreport());
+            //return new String(api.core.htmlreport());
+            return new String(api.core.jsonreport());
 
             // Print Passive scan results/alerts
             //System.out.println("Alerts:");
@@ -78,15 +79,15 @@ public class AddressScanner {
         return null;
     }
 
-    public static void activeScan(String targetAddress){
+    public static String activeScan(String targetAddress){
         if(api == null)
             api = new ClientApi(ZAP_ADDRESS, ZAP_PORT, ZAP_API_KEY);
 
         try {
             List<ApiResponse> ajaxSpiderResponse = spiderCrawl(targetAddress);
 
-            System.out.println("Active Scanning target : " + TARGET);
-            ApiResponse resp1 = api.ascan.scan(TARGET, "True", "False", null, null, null);
+            System.out.println("Active Scanning target : " + targetAddress);
+            ApiResponse resp1 = api.ascan.scan(targetAddress, "True", "False", null, null, null);
             String scanid;
             int progress;
 
@@ -106,12 +107,13 @@ public class AddressScanner {
             System.out.println("Alerts:");
             System.out.println(new String(api.core.xmlreport(), StandardCharsets.UTF_8));
 
-            BufferedWriter activeWriter = new BufferedWriter(new FileWriter("/home/stanciul420/Desktop/activescan.html"));
-            activeWriter.write(new String(api.core.htmlreport()));
+            return new String(api.core.jsonreport());
         }catch (Exception e) {
             System.out.println("Exception : " + e.getMessage());
             e.printStackTrace();
         }
+
+        return "";
     }
 
     public static String startScan(String targetAddress, String clientUsername){
@@ -120,14 +122,14 @@ public class AddressScanner {
             LocalDateTime now = LocalDateTime.now();
 
             String scanResult = passiveScan(targetAddress);
-            String reportName = "Reports/" + clientUsername + "_" + dtf.format(now) + ".html";
-            File reportFile = new File(reportName);
-            reportFile.createNewFile();
+//            String reportName = "Reports/" + clientUsername + "_" + dtf.format(now) + ".html";
+//            File reportFile = new File(reportName);
+//            reportFile.createNewFile();
+//
+//            FileOutputStream writer = new FileOutputStream(reportFile);
+//            writer.write(scanResult.getBytes());
 
-            FileOutputStream writer = new FileOutputStream(reportFile);
-            writer.write(scanResult.getBytes());
-
-            return reportName;
+            return scanResult;
         }catch (Exception e) {
             System.out.println("Exception : " + e.getMessage());
             e.printStackTrace();

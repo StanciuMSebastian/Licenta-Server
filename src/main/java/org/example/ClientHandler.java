@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.reportGenerator.PdfGenerator;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.Socket;
@@ -8,6 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Vector;
 
 public class ClientHandler extends Thread{
@@ -138,10 +142,17 @@ public class ClientHandler extends Thread{
                         ServerLog.write("Client " + this.user.getUsername() + " added a new address");
 
                         if (scanType.equals("Automatic") || scanType.equals("Hybrid")) {
-                            String reportFilename = AddressScanner.startScan(addressIp, user.getUsername());
-                            if (reportFilename != null) {
-                                int reportId = DatabaseConnector.addAddressReport(reportFilename, addressId);
-                                Main.addReports(new Reports(reportId,reportFilename,"Automatic",  newAddress));
+                            String reportJson = AddressScanner.startScan(addressIp, user.getUsername());
+                            if (reportJson != null) {
+                                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("ddMMyyHHmmss");
+                                LocalDateTime now = LocalDateTime.now();
+
+                                String reportName = "Reports/" + user.getUsername() + "_" + dtf.format(now) + ".pdf";
+                                PdfGenerator pdfGenerator = new PdfGenerator();
+                                pdfGenerator.generateReport(reportJson, reportName);
+
+                                int reportId = DatabaseConnector.addAddressReport(reportName, addressId);
+                                Main.addReports(new Reports(reportId,reportName,"Automatic",  newAddress));
                                 newAddress.doneAutomaticScan();
                             }
                         }
@@ -423,6 +434,12 @@ public class ClientHandler extends Thread{
                     case "Get Untested Addresses" ->{
                         getUntestedAddresses();
                     }
+                    case "User info" ->{
+                        getUserInfo();
+                    }
+                    case "Address Update" -> {
+                        updateAddress();
+                    }
                     default -> {
                         ServerLog.write("Something went wrong");
                         System.out.println("Something went wrong");
@@ -434,6 +451,47 @@ public class ClientHandler extends Thread{
 
                     return;
                 }
+        }
+    }
+
+    private void updateAddress() {
+        try{
+            int userAddressList = in.readInt();
+            int doneAddresses = Main.getDoneAddresses(this.user);
+
+            if(doneAddresses == userAddressList){
+                out.writeUTF("ok");
+            }else{
+                out.writeUTF("Need Update");
+            }
+        }catch(Exception e){
+            System.out.println("Exception: " + e);
+            e.printStackTrace();
+        }
+    }
+
+    private void getUserInfo() {
+        try{
+            String username = in.readUTF();
+            int cliendId = in.readInt();
+
+            User tester = Main.findUserByUsername(username);
+            User client = Main.findUserById(cliendId);
+
+            if(tester == null){
+                out.writeUTF("Error: tester not found");
+                return;
+            }
+
+            if(client == null){
+                out.writeUTF("Error: invalid user");
+                return;
+            }
+
+            out.writeUTF(tester.toString());
+        }catch(Exception e){
+            System.out.println("Exception: " + e);
+            e.printStackTrace();
         }
     }
 
