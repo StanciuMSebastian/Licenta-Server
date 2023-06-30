@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperPrint xmlns="http://jasperreports.sourceforge.net/jasperreports/print" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/print http://jasperreports.sourceforge.net/xsd/jasperprint.xsd" name="PiechartReport" pageWidth="595" pageHeight="842" topMargin="20" leftMargin="20" bottomMargin="20" rightMargin="20" locale="en_US" timezone="Europe/Bucharest">
+	<property name="net.sf.jasperreports.export.xml.start.page.index" value="0"/>
+	<property name="net.sf.jasperreports.export.xml.end.page.index" value="1"/>
+	<property name="net.sf.jasperreports.export.xml.page.count" value="2"/>
+	<origin band="background"/>
+	<origin band="detail"/>
+	<page>
+		<image>
+			<reportElement uuid="cf549ac4-7da2-4c7e-a526-ca8403bf6a27" x="20" y="20" width="555" height="335" origin="1" srcId="1" printId="1">
+				<property name="net.sf.jasperreports.export.html.embed.image" value="true"/>
+				<property name="net.sf.jasperreports.export.html.embedded.svg.use.fonts" value="true"/>
+			</reportElement>
+			<graphicElement fill="Solid">
+				<pen lineWidth="0.0"/>
+			</graphicElement>
+			<imageSource>
+				<![CDATA[PiechartReport.jasper_files/img_0]]>
+			</imageSource>
+		</image>
+		<image>
+			<reportElement uuid="cf549ac4-7da2-4c7e-a526-ca8403bf6a27" x="20" y="359" width="555" height="335" origin="1" srcId="1" printId="2">
+				<property name="net.sf.jasperreports.export.html.embed.image" value="true"/>
+				<property name="net.sf.jasperreports.export.html.embedded.svg.use.fonts" value="true"/>
+			</reportElement>
+			<graphicElement fill="Solid">
+				<pen lineWidth="0.0"/>
+			</graphicElement>
+			<imageSource>
+				<![CDATA[PiechartReport.jasper_files/img_1]]>
+			</imageSource>
+		</image>
+	</page>
+	<page>
+		<image>
+			<reportElement uuid="cf549ac4-7da2-4c7e-a526-ca8403bf6a27" x="20" y="20" width="555" height="335" origin="1" srcId="1" printId="3">
+				<property name="net.sf.jasperreports.export.html.embed.image" value="true"/>
+				<property name="net.sf.jasperreports.export.html.embedded.svg.use.fonts" value="true"/>
+			</reportElement>
+			<graphicElement fill="Solid">
+				<pen lineWidth="0.0"/>
+			</graphicElement>
+			<imageSource>
+				<![CDATA[PiechartReport.jasper_files/img_2]]>
+			</imageSource>
+		</image>
+	</page>
+</jasperPrint>

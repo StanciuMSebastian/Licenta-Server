@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PiechartReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="264c6634-4f6f-41a5-86ca-3c09e536c139">
+	<subDataset name="Empty Dataset1" uuid="42b4059a-e17b-4809-8c4f-0aac3a65bfc3">
+		<field name="riskWeight" class="java.lang.Integer"/>
+		<field name="riskName" class="java.lang.String"/>
+		<variable name="totalRiskInstances" class="java.lang.Integer" calculation="Sum">
+			<variableExpression><![CDATA[$F{riskWeight}]]></variableExpression>
+		</variable>
+	</subDataset>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -9,13 +16,11 @@
 	<background>
 		<band splitType="Stretch"/>
 	</background>
-	<detail>
-		<band height="339" splitType="Stretch">
+	<title>
+		<band height="261">
 			<pieChart>
 				<chart evaluationTime="Report">
-					<reportElement x="0" y="0" width="555" height="335" uuid="cf549ac4-7da2-4c7e-a526-ca8403bf6a27">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
+					<reportElement x="0" y="-20" width="550" height="260" uuid="1f886d9b-ef2e-46c0-bf77-6f208d736a9a"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -31,5 +36,5 @@
 				</piePlot>
 			</pieChart>
 		</band>
-	</detail>
+	</title>
 </jasperReport>

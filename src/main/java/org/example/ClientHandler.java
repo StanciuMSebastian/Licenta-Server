@@ -1,6 +1,10 @@
 package org.example;
 
+import org.example.entities.Address;
+import org.example.entities.Reports;
+import org.example.entities.User;
 import org.example.reportGenerator.PdfGenerator;
+import org.jfree.chart.title.ShortTextTitle;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -111,24 +115,40 @@ public class ClientHandler extends Thread{
         }
     }
 
+    private boolean checkConnection(String addressIp){
+        try{
+            HttpURLConnection connection = (HttpURLConnection) new URL(addressIp).openConnection();
+            connection.setRequestMethod("HEAD");
+            int responseCode = connection.getResponseCode();
+
+            if(responseCode == 200)
+                return true;
+            else
+                return false;
+        }catch(Exception e){
+            return false;
+        }
+    }
+
     private void insertAddress(){
         try{
             if(this.user.getRole().equals("Client")) {
                 String addressName = in.readUTF();
                 String addressIp = in.readUTF();
                 String scanType = in.readUTF();
+                boolean hasActiveScan = in.readBoolean();
                 String response;
 
-                HttpURLConnection connection = (HttpURLConnection) new URL(addressIp).openConnection();
-                connection.setRequestMethod("HEAD");
-                int responseCode = connection.getResponseCode();
-
-
-                if (responseCode == 200) {
+                if(checkConnection(addressIp)){
                     response = "ok";
-                }else{
-                    response = "Invalid Ip";
-                }
+                }else if(checkConnection("http://" + addressIp)){
+                    response = "ok";
+                    addressIp = "http://" + addressIp;
+                }else if(checkConnection("https://" + addressIp)) {
+                    response = "ok";
+                    addressIp = "https://" + addressIp;
+                }else
+                    response = "Invalid ip";
 
 
                 if (response.equals("ok")) {
@@ -142,19 +162,30 @@ public class ClientHandler extends Thread{
                         ServerLog.write("Client " + this.user.getUsername() + " added a new address");
 
                         if (scanType.equals("Automatic") || scanType.equals("Hybrid")) {
-                            String reportJson = AddressScanner.startScan(addressIp, user.getUsername());
+                            AddressScanner addressScanner = new AddressScanner(this.in, this.out);
+                            String scanDepth = "Passive";
+
+                            if(hasActiveScan)
+                                scanDepth = "Active";
+
+                            String reportJson = addressScanner.startScan(scanDepth, addressIp);
+
+
                             if (reportJson != null) {
                                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("ddMMyyHHmmss");
                                 LocalDateTime now = LocalDateTime.now();
 
                                 String reportName = "Reports/" + user.getUsername() + "_" + dtf.format(now) + ".pdf";
                                 PdfGenerator pdfGenerator = new PdfGenerator();
-                                pdfGenerator.generateReport(reportJson, reportName);
-
-                                int reportId = DatabaseConnector.addAddressReport(reportName, addressId);
-                                Main.addReports(new Reports(reportId,reportName,"Automatic",  newAddress));
-                                newAddress.doneAutomaticScan();
+                                if(pdfGenerator.generateReport(reportJson, reportName)){
+                                    int reportId = DatabaseConnector.addAddressReport(reportName, addressId);
+                                    Main.addReports(new Reports(reportId,reportName,"Automatic",  newAddress));
+                                    newAddress.doneAutomaticScan();
+                                }
                             }
+
+                            out.writeUTF("Done");
+                            out.writeInt(100);
                         }
                     }
                 }else
@@ -168,7 +199,7 @@ public class ClientHandler extends Thread{
         }catch(Exception e){
             System.out.println("Exception: " + e);
             e.printStackTrace();
-            sendErrorMessage("Error");
+            sendErrorMessage("Invalid Ip Address");
         }
     }
 
@@ -194,6 +225,7 @@ public class ClientHandler extends Thread{
                 out.writeUTF(a.getScanType());
                 out.writeUTF(a.getClient().getUsername());
                 out.writeInt(a.getId());
+                out.writeDouble(a.getRating());
                 out.writeBoolean(a.isCompletelyScanned());
                 out.writeBoolean(a.isAutomaticScanComplete());
                 out.writeBoolean(a.isManualScanComplete());
@@ -217,31 +249,31 @@ public class ClientHandler extends Thread{
 
     private void deleteAddress(){
         try{
+            out.flush();
+
             int clientId = in.readInt();
             int addressId = in.readInt();
-            String addressIp = in.readUTF();
-            String addressName = in.readUTF();
+
             Address a = Main.findAddressById(addressId);
 
             User client = Main.findUserById(clientId);
 
             if(client == null){
-                out.writeUTF("Could not find user");
+                out.writeUTF("User not found");
                 return;
             }
 
-            if(!Main.verifyAddress(addressId, addressName, addressIp)){
-                out.writeUTF("Address does not exist.");
+            if(a == null){
+                out.writeUTF("Address not found");
                 return;
             }
 
             if(DatabaseConnector.deleteAddress(a, clientId)){
-                out.writeUTF("Your address was deleted");
+                out.writeUTF("ok");
                 Main.deleteAddress(a);
                 ServerLog.write("User " + client.getUsername() + " deleted an address");
-            }
-            else
-                out.writeUTF("A database error has occurred");
+            }else
+                out.writeUTF("Database error");
         }catch(Exception e){
             System.out.println("Exception: " + e);
             e.printStackTrace();
@@ -257,7 +289,9 @@ public class ClientHandler extends Thread{
             Address address = Main.findAddressById(addressId);
             Reports report = Main.findReportByAddress(address, reportType);
 
-            if(user == null || address == null || address.getClient().getId() != clientId){
+            out.flush();
+
+            if(user == null || address == null){
                 out.writeUTF("Error");
                 return;
             }
@@ -278,6 +312,8 @@ public class ClientHandler extends Thread{
 
             FileInputStream fStream = new FileInputStream(file);
 
+            Long fileSize = file.length();
+
             out.writeUTF(file.getName());
             out.writeLong(file.length());
 
@@ -285,8 +321,8 @@ public class ClientHandler extends Thread{
             byte[] buffer = new byte[4096];
 
             while((bytes = fStream.read(buffer)) != -1){
-                out.write(buffer, 0, bytes);
                 out.flush();
+                out.write(buffer, 0, bytes);
             }
 
             fStream.close();
@@ -440,6 +476,9 @@ public class ClientHandler extends Thread{
                     case "Address Update" -> {
                         updateAddress();
                     }
+                    case "Give User Rating" -> {
+                        giveUserRating();
+                    }
                     default -> {
                         ServerLog.write("Something went wrong");
                         System.out.println("Something went wrong");
@@ -451,6 +490,32 @@ public class ClientHandler extends Thread{
 
                     return;
                 }
+        }
+    }
+
+    private void giveUserRating() {
+        try{
+            int addressId = in.readInt();
+            double rating = in.readDouble();
+
+            Address address = Main.findAddressById(addressId);
+
+            if(address == null){
+                out.writeUTF("Could not find address");
+                return;
+            }
+
+            if(!DatabaseConnector.giveRating(address.getId(), rating)){
+                out.writeUTF("Database Error");
+                return;
+            }
+
+            Main.setRating(address, rating);
+
+            out.writeUTF("ok");
+        }catch(Exception e){
+            System.out.println("Exception: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -472,11 +537,12 @@ public class ClientHandler extends Thread{
 
     private void getUserInfo() {
         try{
+            String userInfo = "";
             String username = in.readUTF();
-            int cliendId = in.readInt();
+            int clientId = in.readInt();
 
             User tester = Main.findUserByUsername(username);
-            User client = Main.findUserById(cliendId);
+            User client = Main.findUserById(clientId);
 
             if(tester == null){
                 out.writeUTF("Error: tester not found");
@@ -488,7 +554,11 @@ public class ClientHandler extends Thread{
                 return;
             }
 
-            out.writeUTF(tester.toString());
+            userInfo = tester.toString();
+
+            userInfo += "\nRating: " + Main.getUserRating(tester.getId()) +
+            "\nVotes: " + Main.getUserRatingCount(tester.getId());
+            out.writeUTF(userInfo);
         }catch(Exception e){
             System.out.println("Exception: " + e);
             e.printStackTrace();

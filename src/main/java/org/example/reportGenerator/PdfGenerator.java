@@ -11,6 +11,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,7 +33,8 @@ public class PdfGenerator {
 
         this.generatedDate = jsonNode.get("@generated").toString().replaceAll("\"", "");
         this.addressName = jsonNode.get("site").get(0).get("@name").toString().replaceAll("\"", "");
-        this.addressHost = jsonNode.get("site").get(0).get("@host").toString().replaceAll("\"", "");;
+        this.addressHost = jsonNode.get("site").get(0).get("@host").toString().replaceAll("\"", "");
+
 
         for(JsonNode alertChildNode : alertsNode){
             Vulnerabilities newVulnerability = new Vulnerabilities(alertChildNode.get("name").toString().replaceAll("\"", ""),
@@ -62,7 +66,7 @@ public class PdfGenerator {
         return vulnList;
     }
 
-    public void generateReport(String jsonContent, String outputPath){
+    public boolean generateReport(String jsonContent, String outputPath){
         try{
             String piechartJRXMLPath = "./src/main/resources/PiechartReport.jrxml";
             String piechartJasperPath = "./src/main/resources/PiechartReport.jasper";
@@ -93,51 +97,30 @@ public class PdfGenerator {
                     piechartData.add(new PiechartData(vulName, 1));
             }
 
+            JasperReport mainReport = JasperCompileManager.compileReport(mainJRXMLPath);
+            JasperReport piechartSubreport = JasperCompileManager.compileReport(piechartJRXMLPath);
+
+            JRDataSource dataSource = new JRBeanCollectionDataSource(vulnList);
+            JRDataSource piechartDataSource = new JRBeanCollectionDataSource(piechartData);
+
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("addressName", this.addressName);
             parameters.put("hostName", this.addressHost);
             parameters.put("scanDate", this.generatedDate);
-
-            JRDataSource piechartDataSource = new JRBeanCollectionDataSource(piechartData);
-
-            JasperReport piechartReport = JasperCompileManager.compileReport(piechartJRXMLPath);
-
-            JasperPrint piechartPrint =
-                    JasperFillManager.fillReport(piechartReport,null, piechartDataSource);
+            parameters.put("piechartSubreport", piechartSubreport);
+            parameters.put("piechartSubreportDataset", piechartDataSource);
 
 
-
-            JasperExportManager.exportReportToXmlFile(piechartPrint, piechartJasperPath, false);
-
-            Thread.sleep(1000);
-
-            JRDataSource dataSource = new JRBeanCollectionDataSource(vulnList);
-
-            JasperDesign design = JRXmlLoader.load(new File(mainJRXMLPath));
-
-            JasperReport report = JasperCompileManager.compileReport(design);
-
-            JasperPrint print =
-                    JasperFillManager.fillReport(report, parameters, dataSource);
-
-            JasperExportManager.exportReportToPdfFile(print, outputPath);
-
-            File directoryToBeDeleted = new File("./PiechartReport.jasper_files");
-
-            File[] allContents = directoryToBeDeleted.listFiles();
-            if (allContents != null) {
-                for (File file : allContents) {
-                    if(!file.delete())
-                        System.out.println("Couldn't delete file " + file.getName());
-                }
-            }
-
-            if(!directoryToBeDeleted.delete())
-                System.out.println("Couldn't delete file " + directoryToBeDeleted.getName());
+            JasperPrint reportPrint = JasperFillManager.fillReport(mainReport, parameters, dataSource);
+            JasperExportManager.exportReportToPdfFile(reportPrint, outputPath);
 
             System.out.println("Report created");
+            return true;
         } catch (Exception e) {
             System.err.println("Error generating the report: " + e.getMessage());
+            e.printStackTrace();
         }
+
+        return false;
     }
 }

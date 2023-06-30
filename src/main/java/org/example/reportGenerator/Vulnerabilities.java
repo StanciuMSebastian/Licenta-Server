@@ -24,18 +24,14 @@ public class Vulnerabilities implements JRDataSource {
     public void addInstance(ArrayList<Instance> newInstance){
         this.instanceList.addAll(newInstance);
 
-        int instanceCount = 0;
-
         for(Instance i : newInstance){
-            instanceCount++;
 
             instances = instances.concat("URL: " + i.getUrl());
             instances = instances.concat("\nAttack: " + i.getAttack());
             instances = instances.concat("\nMethod: " + i.getMethod());
-            instances = instances.concat("\n\n");
-
-            if(instanceCount >= 10)
-                return;
+            instances = instances.concat("\nEvidence: " + i.getEvidence());
+            instances = instances.concat("\nOther information: " + i.getInfo());
+            instances = instances.concat("\n\n\n");
         }
     }
 
@@ -83,11 +79,13 @@ public class Vulnerabilities implements JRDataSource {
         return instanceList;
     }
 
+
     public Vulnerabilities(String name, String description, String riskDescription, String solution, String reference, Integer id, Integer riskCode, Integer confidence, Integer count) {
+        String solution1;
         this.name = name;
         this.description = description;
         this.riskDescription = riskDescription;
-        this.solution = solution;
+        solution1 = solution;
         this.reference = reference;
         this.id = id;
         this.riskCode = riskCode;
@@ -95,6 +93,12 @@ public class Vulnerabilities implements JRDataSource {
         this.count = count;
         this.instances = "";
 
+        if(solution1.isBlank() && this.id == 10104){
+            solution1 = "Ensure that the user-provided input is sanitised and properly validated\n";
+        }
+
+
+        this.solution = solution1;
         this.instanceList = new ArrayList<>();
     }
     public Vulnerabilities(){

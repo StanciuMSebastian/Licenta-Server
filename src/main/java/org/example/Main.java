@@ -1,11 +1,16 @@
 package org.example;
 
-import javax.xml.crypto.Data;
+import org.example.entities.Address;
+import org.example.entities.Reports;
+import org.example.entities.User;
+import org.example.reportGenerator.PdfGenerator;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.File;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 import java.util.Vector;
 
 
@@ -19,6 +24,16 @@ public class Main {
     }
     public static void deleteAddress(Address a){addressVector.remove(a);}
 
+    public static void setRating(Address address, double value){
+        for(Address a : addressVector){
+            if(a.equals(address)){
+                a.setRating(value);
+
+                return;
+            }
+        }
+    }
+
     public static Address findAddressById(int id){
         for(Address a : addressVector){
             if(a.getId() == id)
@@ -26,6 +41,32 @@ public class Main {
         }
 
         return null;
+    }
+
+    public static int getUserRatingCount(int testerId){
+        int count = 0;
+
+        for(Address a : addressVector){
+            if(a.getTester() != null && a.getTester().getId() == testerId && a.getRating() != -1)
+                count++;
+        }
+
+        return count;
+    }
+
+    public static double getUserRating(int testerId){
+        int count = 0;
+        double rating = 0;
+
+        for(Address a : addressVector){
+            if(a.getTester() != null && a.getTester().getId() == testerId && a.getRating() != -1){
+                count++;
+                rating += a.getRating();
+            }
+
+        }
+
+        return rating/count;
     }
 
     public static boolean verifyAddress(int id, String addressName, String addressIp){
@@ -128,9 +169,16 @@ public class Main {
     public static int getDoneAddresses(User user){
         int counter = 0;
 
-        for(Address a : addressVector){
-            if(a.getClient().equals(user) && (a.isAutomaticScanComplete() || a.isManualScanComplete()))
-                counter++;
+        if(user.getRole().equals("Client")){
+            for(Address a : addressVector){
+                if(a.getClient().equals(user) && (a.isAutomaticScanComplete() || a.isManualScanComplete()))
+                    counter++;
+            }
+        }else if(user.getRole().equals("Tester")){
+            for(Address a : addressVector){
+                if(a.getTester() != null && a.getTester().equals(user) && (a.isAutomaticScanComplete() || a.isManualScanComplete()))
+                    counter++;
+            }
         }
 
         return counter;
@@ -138,7 +186,16 @@ public class Main {
 
     public static void main(String[] args){
         try{
-            // AddressScanner.passiveScan("nothing");
+            File jsonFile = new File("/home/stanciul420/Desktop/activeScan.json");
+            StringBuilder jsonData = new StringBuilder();
+            Scanner scanner = new Scanner(jsonFile);
+
+            while(scanner.hasNextLine()){
+                jsonData.append(scanner.nextLine());
+            }
+
+            PdfGenerator pdfGenerator = new PdfGenerator();
+            pdfGenerator.generateReport(jsonData.toString(), "/home/stanciul420/Desktop/Report.pdf");
 
             int port = 2000;
             ServerSocket server = new ServerSocket(port);
@@ -147,6 +204,7 @@ public class Main {
             userVector = DatabaseConnector.initUsers();
             addressVector = DatabaseConnector.initAddress();
             reportVector = DatabaseConnector.initReports();
+
 
             while(true){
                 Socket client = server.accept();

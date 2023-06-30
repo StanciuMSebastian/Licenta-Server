@@ -1,4 +1,4 @@
-package org.example;
+package org.example.entities;
 
 import java.util.Vector;
 
@@ -7,10 +7,18 @@ public class Address {
     private String ip;
     private String name;
     private String scanType;
+    private double rating;
 
     private int id;
     private User tester, client;
     private boolean areScansComplete, isAutomaticScanComplete, isManualScanComplete;
+    public double getRating(){
+        return this.rating;
+    }
+
+    public void setRating(double rating){
+        this.rating = rating;
+    }
 
     public String getIp() {
         return ip;

@@ -1,5 +1,9 @@
 package org.example;
 
+import org.example.entities.Address;
+import org.example.entities.Reports;
+import org.example.entities.User;
+
 import java.sql.*;
 import java.util.Vector;
 
@@ -110,6 +114,7 @@ public class DatabaseConnector {
             if(selectResult.getString("ManualScanStatus").equals("Done"))
                 newAddress.doneManualScan();
 
+            newAddress.setRating(selectResult.getDouble("Rating"));
             returnVector.add(newAddress);
         }
 
@@ -169,16 +174,23 @@ public class DatabaseConnector {
 
     public static boolean deleteAddress(Address address, int clientId){
         try{
-            String query = "DELETE FROM Licenta.IpAddresses WHERE IpAddressID = ? AND ClientID = ?;";
+            String deleteReportQuery = "DELETE FROM Licenta.Reports WHERE AddressId = ?";
+            String deleteAddressQuery = "DELETE FROM Licenta.IpAddresses WHERE IpAddressID = ? AND ClientID = ?;";
 
-            PreparedStatement insertStatement = con.prepareStatement(query);
+            PreparedStatement deleteReportStatement = con.prepareStatement(deleteReportQuery);
+            PreparedStatement deleteAddressStatement = con.prepareStatement(deleteAddressQuery);
 
-            insertStatement.setInt(1, address.getId());
-            insertStatement.setInt(2, clientId);
+            deleteReportStatement.setInt(1, address.getId());
+
+            deleteAddressStatement.setInt(1, address.getId());
+            deleteAddressStatement.setInt(2, clientId);
 
             // System.out.println(insertStatement.toString());
 
-            insertStatement.execute();
+            if(Main.findReportByAddress(address) != null)
+                deleteReportStatement.execute();
+
+            deleteAddressStatement.execute();
 
             return true;
         }catch(Exception e){
@@ -217,6 +229,27 @@ public class DatabaseConnector {
         }
 
         return -1;
+    }
+
+    public static boolean giveRating(int addressId, double rating){
+        try{
+            String query = "UPDATE Licenta.IpAddresses SET Rating = ? WHERE IpAddressId = ?";
+
+
+            PreparedStatement updateStatement = con.prepareStatement(query);
+
+            updateStatement.setDouble(1, rating);
+            updateStatement.setInt(2, addressId);
+
+            updateStatement.execute();
+
+            return true;
+        }catch(Exception e){
+            System.out.println("Exception: " + e);
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     public static boolean insertUser(String username, String password, String email, String role){
